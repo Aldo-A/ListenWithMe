@@ -30,15 +30,27 @@ public class UserController {
     public ResponseEntity<Iterable<User>> createUser(@RequestBody User user){
         user=userRepository.save(user);
         HttpHeaders header=new HttpHeaders();
-        URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{name}").buildAndExpand(user.getName()).toUri();
+        URI newUserUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
         header.setLocation(newUserUri);
         return new ResponseEntity<>(header, HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/users/{name}", method =RequestMethod.GET)
-    public ResponseEntity<?> getUser(@PathVariable String name){
-        User u=userRepository.findByName(name);
+    @RequestMapping(value = "/users/{id}", method =RequestMethod.GET)
+    public ResponseEntity<?> getUser(@PathVariable Long id){
+        User u=userRepository.findOne(id);
         return new ResponseEntity<>(u,HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/users/{id}", method =RequestMethod.PUT)
+    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable Long id){
+        User u=userRepository.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/users/{id}", method =RequestMethod.DELETE)
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+        userRepository.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
