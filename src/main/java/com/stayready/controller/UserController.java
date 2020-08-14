@@ -1,6 +1,7 @@
 package com.stayready.controller;
 
 import com.stayready.domain.User;
+import com.stayready.exception.ResourceNotFoundException;
 import com.stayready.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -37,20 +38,28 @@ public class UserController {
 
     @RequestMapping(value = "/users/{id}", method =RequestMethod.GET)
     public ResponseEntity<?> getUser(@PathVariable Long id){
+        verifyUser(id);
         User u=userRepository.findOne(id);
         return new ResponseEntity<>(u,HttpStatus.OK);
     }
 
     @RequestMapping(value = "/users/{id}", method =RequestMethod.PUT)
     public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable Long id){
+        verifyUser(id);
         User u=userRepository.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/users/{id}", method =RequestMethod.DELETE)
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
+        verifyUser(id);
         userRepository.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public void verifyUser(Long id){
+        if(!userRepository.exists(id))
+            throw new ResourceNotFoundException("User not found!");
     }
 
 }
